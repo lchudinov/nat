@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <assert.h>
 
 typedef struct N_tag {
   const struct N_tag *prev;  
@@ -21,6 +22,10 @@ N* Succ(const N *n) {
   N *succ = (N*)malloc(sizeof(N));
   succ->prev = n;
   return succ;
+}
+
+N* One() {
+  return Succ(Zero());
 }
 
 bool isZero(const N *n) {
@@ -44,6 +49,58 @@ bool equal(const N *a, const N *b) {
   return equal(a->prev, b->prev);
 }
 
+bool less(const N *a, const N *b) {
+  if (isZero(a) && isZero(b)) {
+    return false;
+  }
+  if (isZero(a) && !isZero(b)) {
+    return true;
+  }
+  if (!isZero(a) && isZero(b)) {
+    return false;
+  }
+  return less(a->prev, b->prev);
+}
+
+bool lessOrEqual(const N *a, const N *b) {
+  if (isZero(a) && isZero(b)) {
+    return true;
+  }
+  if (isZero(a) && !isZero(b)) {
+    return true;
+  }
+  if (!isZero(a) && isZero(b)) {
+    return false;
+  }
+  return lessOrEqual(a->prev, b->prev);
+}
+
+bool greater(const N *a, const N *b) {
+  if (isZero(a) && isZero(b)) {
+    return false;
+  }
+  if (isZero(a) && !isZero(b)) {
+    return false;
+  }
+  if (!isZero(a) && isZero(b)) {
+    return true;
+  }
+  return greater(a->prev, b->prev);
+}
+
+bool greaterOrEqual(const N *a, const N *b) {
+  if (isZero(a) && isZero(b)) {
+    return true;
+  }
+  if (isZero(a) && !isZero(b)) {
+    return false;
+  }
+  if (!isZero(a) && isZero(b)) {
+    return true;
+  }
+  return greaterOrEqual(a->prev, b->prev);
+}
+
 int toInt(const N *n) {
   int num = 0;
   while (!isZero(n)) {
@@ -61,6 +118,14 @@ const N* plus(const N *a, const N *b) {
   return plus(succA, b->prev);
 }
 
+const N* minus(const N *a, const N *b) {
+  assert(greaterOrEqual(a, b));
+  if (isZero(b)) {
+    return a;
+  }
+  return minus(a->prev, b->prev);
+}
+
 const N* mul(const N *a, const N *b) {
   if (isZero(b) || isZero(b)) {
     return Zero();
@@ -69,6 +134,23 @@ const N* mul(const N *a, const N *b) {
     return a;
   }
   return plus(a, mul(a, b->prev));
+}
+
+const N* divN(const N *a, const N *b) {
+  assert(!isZero(b));
+  if (isOne(b)) {
+    return a;
+  }
+  if (greaterOrEqual(a, b)) {
+    return plus(One(), divN(minus(a, b), b));
+  } else {
+    return Zero();
+  }
+}
+
+// TODO: Implement me
+const N* modN(const N *a, const N *b) {
+  return Zero();
 }
 
 const R* _R(const N *p, const N *q) {
@@ -99,6 +181,8 @@ int main() {
   const R *_1_2 = _R(_1, _2);
   const R *_1_4 = _R(_1, _4);
   const R *_3_4 = plusR(_1_2, _1_4);
+  
+  const N *_32d10 = divN(_32, _10);
 
   printf("%d + %d = %d\n", toInt(_2), toInt(_2), toInt(_4));
   printf("%d + %d = %d\n", toInt(_4), toInt(_4), toInt(_8));
@@ -108,6 +192,6 @@ int main() {
   printf("%d * %d = %d\n", toInt(_10), toInt(_10), toInt(_100));
   printf("%d * %d = %d\n", toInt(_100), toInt(_100), toInt(_10000));
   printf("%d/%d + %d/%d = %d/%d\n", toInt(_1_2->p), toInt(_1_2->q), toInt(_1_4->p), toInt(_1_4->q), toInt(_3_4->p), toInt(_3_4->q));
-
+  printf ("%d / %d = %d\n", toInt(_32), toInt(_10), toInt(_32d10));
   return 0;
 }
