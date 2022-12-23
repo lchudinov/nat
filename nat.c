@@ -208,7 +208,9 @@ int main() {
   
   const R *_1_2 = _R(_1, _2);
   const R *_1_4 = _R(_1, _4);
+  const R *_1_8 = _R(_1, _8);
   const R *_3_4 = plusR(_1_2, _1_4);
+  const R *_5_8 = plusR(_1_2, _1_8);
   
   const N *_32div10 = divN(_32, _10);
   const N *_32mod10 = modN(_32, _10);
@@ -221,6 +223,7 @@ int main() {
   printf("%d * %d = %d\n", toInt(_10), toInt(_10), toInt(_100));
   printf("%d * %d = %d\n", toInt(_100), toInt(_100), toInt(_10000));
   printf("%d/%d + %d/%d = %d/%d\n", toInt(_1_2->p), toInt(_1_2->q), toInt(_1_4->p), toInt(_1_4->q), toInt(_3_4->p), toInt(_3_4->q));
+  printf("%d/%d + %d/%d = %d/%d\n", toInt(_1_2->p), toInt(_1_2->q), toInt(_1_8->p), toInt(_1_8->q), toInt(_5_8->p), toInt(_5_8->q));
   printf ("%d / %d = %d\n", toInt(_32), toInt(_10), toInt(_32div10));
   printf ("%d %% %d = %d\n", toInt(_32), toInt(_10), toInt(_32mod10));
   printf ("gcd (%d, %d) = %d\n", toInt(_6), toInt(_8), toInt(_6_gcd_8));
