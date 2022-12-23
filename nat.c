@@ -3,6 +3,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+int bytesTotal = 0;
+
+void *alloc(size_t size) {
+  bytesTotal += size;
+  return malloc(size);
+}
+
 typedef struct N_tag {
   const struct N_tag *prev;
 } N;
@@ -13,13 +20,13 @@ typedef struct R_tag {
 } R;
 
 N *Zero() {
-  N *zero = malloc(sizeof(N));
+  N *zero = alloc(sizeof(N));
   zero->prev = NULL;
   return zero;
 }
 
 N *Succ(const N *n) {
-  N *succ = (N *)malloc(sizeof(N));
+  N *succ = (N *)alloc(sizeof(N));
   succ->prev = n;
   return succ;
 }
@@ -164,7 +171,7 @@ const N *gcd(const N *a, const N *b) {
 }
 
 const R *_R(const N *p, const N *q) {
-  R *r = malloc(sizeof(R));
+  R *r = alloc(sizeof(R));
   r->p = p;
   r->q = q;
   return r;
@@ -181,7 +188,7 @@ const R *simplifyR(const R *r) {
 }
 
 const R *plusR(const R *a, const R *b) {
-  R *r = malloc(sizeof(R));
+  R *r = alloc(sizeof(R));
   r->p = plus(mul(a->p, b->q), mul(a->q, b->p));
   r->q = mul(a->q, b->q);
   return simplifyR(r);
@@ -221,5 +228,7 @@ int main() {
   printf("%d / %d = %d\n", toInt(_32), toInt(_10), toInt(_32div10));
   printf("%d %% %d = %d\n", toInt(_32), toInt(_10), toInt(_32mod10));
   printf("gcd (%d, %d) = %d\n", toInt(_6), toInt(_8), toInt(_6_gcd_8));
+  printf("allocated %d Mb\n", bytesTotal / 1024 / 1024);
+
   return 0;
 }
