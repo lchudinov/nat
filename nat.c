@@ -148,9 +148,15 @@ const N* divN(const N *a, const N *b) {
   }
 }
 
-// TODO: Implement me
 const N* modN(const N *a, const N *b) {
-  return Zero();
+  assert(!isZero(b));
+  if (equal(a, b)) {
+    return Zero();
+  }
+  if (less(a, b)) {
+    return a;
+  }
+  return modN(minus(a, b), b);
 }
 
 const R* _R(const N *p, const N *q) {
@@ -182,7 +188,8 @@ int main() {
   const R *_1_4 = _R(_1, _4);
   const R *_3_4 = plusR(_1_2, _1_4);
   
-  const N *_32d10 = divN(_32, _10);
+  const N *_32div10 = divN(_32, _10);
+  const N *_32mod10 = modN(_32, _10);
 
   printf("%d + %d = %d\n", toInt(_2), toInt(_2), toInt(_4));
   printf("%d + %d = %d\n", toInt(_4), toInt(_4), toInt(_8));
@@ -192,6 +199,7 @@ int main() {
   printf("%d * %d = %d\n", toInt(_10), toInt(_10), toInt(_100));
   printf("%d * %d = %d\n", toInt(_100), toInt(_100), toInt(_10000));
   printf("%d/%d + %d/%d = %d/%d\n", toInt(_1_2->p), toInt(_1_2->q), toInt(_1_4->p), toInt(_1_4->q), toInt(_3_4->p), toInt(_3_4->q));
-  printf ("%d / %d = %d\n", toInt(_32), toInt(_10), toInt(_32d10));
+  printf ("%d / %d = %d\n", toInt(_32), toInt(_10), toInt(_32div10));
+  printf ("%d %% %d = %d\n", toInt(_32), toInt(_10), toInt(_32mod10));
   return 0;
 }
