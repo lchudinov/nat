@@ -176,11 +176,21 @@ const R* _R(const N *p, const N *q) {
   return r;
 }
 
+const R* simplifyR(const R *r) {
+  const N *gcd_pq = gcd(r->p, r->q);
+  if (!isZero(gcd_pq)) {
+    const N* p = divN(r->p, gcd_pq);
+    const N* q = divN(r->q, gcd_pq);
+    return _R(p, q);
+  }
+  return r;
+}
+
 const R* plusR(const R *a, const R *b) {
   R *r = malloc(sizeof(R));
   r->p = plus(mul(a->p, b->q), mul(a->q, b->p));
   r->q = mul(a->q, b->q);
-  return r;
+  return simplifyR(r);
 }
 
 int main() {
