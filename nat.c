@@ -1,10 +1,10 @@
+#include <assert.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
-#include <assert.h>
 
 typedef struct N_tag {
-  const struct N_tag *prev;  
+  const struct N_tag *prev;
 } N;
 
 typedef struct R_tag {
@@ -12,29 +12,23 @@ typedef struct R_tag {
   const N *q;
 } R;
 
-N* Zero() {
+N *Zero() {
   N *zero = malloc(sizeof(N));
   zero->prev = NULL;
   return zero;
 }
 
-N* Succ(const N *n) {
-  N *succ = (N*)malloc(sizeof(N));
+N *Succ(const N *n) {
+  N *succ = (N *)malloc(sizeof(N));
   succ->prev = n;
   return succ;
 }
 
-N* One() {
-  return Succ(Zero());
-}
+N *One() { return Succ(Zero()); }
 
-bool isZero(const N *n) {
-  return n->prev == NULL;
-}
+bool isZero(const N *n) { return n->prev == NULL; }
 
-bool isOne(const N *n) {
-  return !isZero(n) && isZero(n->prev);
-}
+bool isOne(const N *n) { return !isZero(n) && isZero(n->prev); }
 
 bool equal(const N *a, const N *b) {
   if (isZero(a) && isZero(b)) {
@@ -110,15 +104,15 @@ int toInt(const N *n) {
   return num;
 }
 
-const N* plus(const N *a, const N *b) {
+const N *plus(const N *a, const N *b) {
   if (isZero(b)) {
     return a;
   }
-  N* succA = Succ(a);
+  N *succA = Succ(a);
   return plus(succA, b->prev);
 }
 
-const N* minus(const N *a, const N *b) {
+const N *minus(const N *a, const N *b) {
   assert(greaterOrEqual(a, b));
   if (isZero(b)) {
     return a;
@@ -126,7 +120,7 @@ const N* minus(const N *a, const N *b) {
   return minus(a->prev, b->prev);
 }
 
-const N* mul(const N *a, const N *b) {
+const N *mul(const N *a, const N *b) {
   if (isZero(b) || isZero(b)) {
     return Zero();
   }
@@ -136,7 +130,7 @@ const N* mul(const N *a, const N *b) {
   return plus(a, mul(a, b->prev));
 }
 
-const N* divN(const N *a, const N *b) {
+const N *divN(const N *a, const N *b) {
   assert(!isZero(b));
   if (isOne(b)) {
     return a;
@@ -148,7 +142,7 @@ const N* divN(const N *a, const N *b) {
   }
 }
 
-const N* modN(const N *a, const N *b) {
+const N *modN(const N *a, const N *b) {
   assert(!isZero(b));
   if (equal(a, b)) {
     return Zero();
@@ -159,7 +153,7 @@ const N* modN(const N *a, const N *b) {
   return modN(minus(a, b), b);
 }
 
-const N* gcd(const N *a, const N *b) {
+const N *gcd(const N *a, const N *b) {
   if (isZero(a)) {
     return b;
   }
@@ -169,24 +163,24 @@ const N* gcd(const N *a, const N *b) {
   return gcd(b, modN(a, b));
 }
 
-const R* _R(const N *p, const N *q) {
+const R *_R(const N *p, const N *q) {
   R *r = malloc(sizeof(R));
   r->p = p;
   r->q = q;
   return r;
 }
 
-const R* simplifyR(const R *r) {
+const R *simplifyR(const R *r) {
   const N *gcd_pq = gcd(r->p, r->q);
   if (!isZero(gcd_pq)) {
-    const N* p = divN(r->p, gcd_pq);
-    const N* q = divN(r->q, gcd_pq);
+    const N *p = divN(r->p, gcd_pq);
+    const N *q = divN(r->q, gcd_pq);
     return _R(p, q);
   }
   return r;
 }
 
-const R* plusR(const R *a, const R *b) {
+const R *plusR(const R *a, const R *b) {
   R *r = malloc(sizeof(R));
   r->p = plus(mul(a->p, b->q), mul(a->q, b->p));
   r->q = mul(a->q, b->q);
@@ -205,13 +199,13 @@ int main() {
   const N *_100 = mul(_10, _10);
   const N *_10000 = mul(_100, _100);
   const N *_6_gcd_8 = gcd(_6, _8);
-  
+
   const R *_1_2 = _R(_1, _2);
   const R *_1_4 = _R(_1, _4);
   const R *_1_8 = _R(_1, _8);
   const R *_3_4 = plusR(_1_2, _1_4);
   const R *_5_8 = plusR(_1_2, _1_8);
-  
+
   const N *_32div10 = divN(_32, _10);
   const N *_32mod10 = modN(_32, _10);
 
@@ -224,8 +218,8 @@ int main() {
   printf("%d * %d = %d\n", toInt(_100), toInt(_100), toInt(_10000));
   printf("%d/%d + %d/%d = %d/%d\n", toInt(_1_2->p), toInt(_1_2->q), toInt(_1_4->p), toInt(_1_4->q), toInt(_3_4->p), toInt(_3_4->q));
   printf("%d/%d + %d/%d = %d/%d\n", toInt(_1_2->p), toInt(_1_2->q), toInt(_1_8->p), toInt(_1_8->q), toInt(_5_8->p), toInt(_5_8->q));
-  printf ("%d / %d = %d\n", toInt(_32), toInt(_10), toInt(_32div10));
-  printf ("%d %% %d = %d\n", toInt(_32), toInt(_10), toInt(_32mod10));
-  printf ("gcd (%d, %d) = %d\n", toInt(_6), toInt(_8), toInt(_6_gcd_8));
+  printf("%d / %d = %d\n", toInt(_32), toInt(_10), toInt(_32div10));
+  printf("%d %% %d = %d\n", toInt(_32), toInt(_10), toInt(_32mod10));
+  printf("gcd (%d, %d) = %d\n", toInt(_6), toInt(_8), toInt(_6_gcd_8));
   return 0;
 }
